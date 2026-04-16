@@ -1,0 +1,92 @@
+{
+  "metadata": {
+    "name": "VibeGuard shared rules",
+    "version": "1.0.0",
+    "format": "json-compatible-yaml",
+    "description": "Shared redaction and command review rules for Claude Code and Codex."
+  },
+  "sensitive_fields": [
+    {
+      "name": "db-password-env",
+      "pattern": "(?im)\\bDB_PASSWORD\\s*=\\s*[^\\r\\n#]+",
+      "replacement": "DB_PASSWORD=<REDACTED>",
+      "enabled": true,
+      "source": "builtin",
+      "severity": "high"
+    },
+    {
+      "name": "openai-api-key-env",
+      "pattern": "(?im)\\bOPENAI_API_KEY\\s*=\\s*[^\\r\\n#]+",
+      "replacement": "OPENAI_API_KEY=<REDACTED>",
+      "enabled": true,
+      "source": "builtin",
+      "severity": "high"
+    },
+    {
+      "name": "generic-sk-key",
+      "pattern": "sk-[A-Za-z0-9_-]{8,}",
+      "replacement": "<API_KEY_REDACTED>",
+      "enabled": true,
+      "source": "builtin",
+      "severity": "high"
+    },
+    {
+      "name": "china-mobile-phone",
+      "pattern": "(?<!\\d)1[3-9]\\d{9}(?!\\d)",
+      "replacement": "<PHONE_REDACTED>",
+      "enabled": true,
+      "source": "builtin",
+      "severity": "medium"
+    },
+    {
+      "name": "china-id-card",
+      "pattern": "(?<!\\d)\\d{17}[\\dXx](?!\\d)",
+      "replacement": "<ID_REDACTED>",
+      "enabled": true,
+      "source": "builtin",
+      "severity": "high"
+    }
+  ],
+  "dangerous_commands": [
+    {
+      "name": "recursive-force-delete",
+      "pattern": "rm\\s+-rf\\b",
+      "message": "Detected recursive force delete. Confirm the target path before continuing.",
+      "safer_alternative": "List the target first or narrow the scope, for example: ls /data && rm -rf /data/tmp",
+      "enabled": true,
+      "source": "builtin",
+      "severity": "critical",
+      "ignore_case": true
+    },
+    {
+      "name": "truncate-table",
+      "pattern": "TRUNCATE\\s+TABLE\\b",
+      "message": "Detected table truncation. The rows will be removed immediately.",
+      "safer_alternative": "Back up first or use DELETE ... WHERE with a small scope.",
+      "enabled": true,
+      "source": "builtin",
+      "severity": "high",
+      "ignore_case": true
+    },
+    {
+      "name": "drop-database",
+      "pattern": "DROP\\s+DATABASE\\b",
+      "message": "Detected database deletion. This is typically irreversible.",
+      "safer_alternative": "Export a backup first or point the command at a disposable test database.",
+      "enabled": true,
+      "source": "builtin",
+      "severity": "critical",
+      "ignore_case": true
+    },
+    {
+      "name": "chmod-777",
+      "pattern": "chmod\\s+777\\b",
+      "message": "Detected fully open permissions. This can expose files to unintended writes.",
+      "safer_alternative": "Use the narrowest permission set possible, for example chmod 750 or chmod 640.",
+      "enabled": true,
+      "source": "builtin",
+      "severity": "medium",
+      "ignore_case": true
+    }
+  ]
+}

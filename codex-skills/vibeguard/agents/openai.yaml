@@ -1,0 +1,4 @@
+interface:
+  display_name: "VibeGuard"
+  short_description: "Redact secrets and review risky commands."
+  default_prompt: "Use $vibeguard to redact sensitive context and review risky shell or SQL commands before responding."
